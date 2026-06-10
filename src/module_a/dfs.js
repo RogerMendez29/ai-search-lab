@@ -34,7 +34,6 @@ export function solveDFS(initialState) {
 
     //Get the valid next states from the current state
     const successors = getSuccessors(state);
-    console.log("Successors found:", successors.length, successors);
     //push each unvisited successor onto the stack
     for (const successor of successors) {
       const key = stateToString(successor); //convert the successor state to a string for comparison
