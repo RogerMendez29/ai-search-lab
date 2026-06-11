@@ -1,14 +1,18 @@
-// App.jsx
-// This is the main entry point of the application.
-// Right now it just shows the 8-Puzzle module.
-// Later we will add navigation between Module A and Module B.
-
+import { useState } from "react";
+import NavBar from "./components/NavBar.jsx";
 import PuzzleUI from "./module_a/PuzzleUI.jsx";
+import TicTacToeUI from "./module_b/TicTacToeUI.jsx";
 
 function App() {
+  const [activeModule, setActiveModule] = useState("a");
+
   return (
     <div>
-      <PuzzleUI />
+      <NavBar activeModule={activeModule} onNavigate={setActiveModule} />
+      <main>
+        {activeModule === "a" && <PuzzleUI />}
+        {activeModule === "b" && <TicTacToeUI />}
+      </main>
     </div>
   );
 }
