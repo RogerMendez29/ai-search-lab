@@ -1,4 +1,4 @@
-//Depth First Search
+//Breadth First Search
 import {
   getSuccessors, //get valid next states from the current state
   isGoal, //check if the current state is the goal state
@@ -6,12 +6,12 @@ import {
   GOAL_STATE, //the target configuration we want to reach
 } from "./puzzle.js";
 
-//Fucntion to solve the puzzle using Depth First Search
-export function solveDFS(initialState) {
+//Fucntion to solve the puzzle using Breadth First Search
+export function solveBFS(initialState) {
   const startTime = performance.now(); //start timer to measure execution time
 
-  //The stacks hold the states who need to explore and the path to reach those states
-  const stack = [{ state: initialState, path: [initialState] }];
+  //The queue hold the states who need to explore and the path to reach those states
+  const queue = [{ state: initialState, path: [initialState] }];
 
   //Set to keep track of visited states to avoid cycles
   const visited = new Set();
@@ -19,8 +19,8 @@ export function solveDFS(initialState) {
 
   let nodesExplored = 0; //counter for the number of nodes explored
 
-  while (stack.length > 0) {
-    const { state, path } = stack.pop(); //pop from the top of the stack LIFO
+  while (queue.length > 0) {
+    const { state, path } = queue.shift(); //shift from the top of the stack LIFO
     nodesExplored++; //increment the nodes explored counter
     //Check if we have reached the goal state
     if (isGoal(state)) {
@@ -40,7 +40,7 @@ export function solveDFS(initialState) {
       if (!visited.has(key)) {
         //check if the successor state has not been visited
         visited.add(key); //mark the successor state as visited
-        stack.push({ state: successor, path: [...path, successor] }); //push the successor onto the stack with the updated path
+        queue.push({ state: successor, path: [...path, successor] }); //push the successor onto the stack with the updated path
       }
     }
   }

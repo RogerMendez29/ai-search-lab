@@ -4,7 +4,7 @@ it handles, display, and user interaction like shuffling and solving
 */
 
 import { useState, useEffect } from "react";
-import { solveDFS } from "./dfs.js";
+import { solveBFS } from "./bfs.js";
 import { solveDijkstra } from "./dijkstra.js";
 import { solveAStar } from "./astar.js";
 import { shuffle, INITIAL_STATE, isGoal } from "./puzzle.js";
@@ -92,8 +92,8 @@ export default function PuzzleUI() {
       let result;
 
       //Run the selected algorithm
-      if (selectedAlgorithm === "dfs") {
-        result = solveDFS(board);
+      if (selectedAlgorithm === "bfs") {
+        result = solveBFS(board);
       } else if (selectedAlgorithm === "dijkstra") {
         result = solveDijkstra(board);
       } else {
@@ -199,7 +199,7 @@ export default function PuzzleUI() {
           style={styles.select}
           disabled={isPlaying || isSolving} //lock during solve
         >
-          <option value="dfs">DFS</option>
+          <option value="bfs">BFS</option>
           <option value="dijkstra">Dijkstra</option>
           <option value="astar">A*</option>
         </select>
