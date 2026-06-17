@@ -1,0 +1,101 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    font-family: sans-serif;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  
+  .algoRow {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .algoSelector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+  }
+  
+  .select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+  
+  .vs {
+    font-size: 20px;
+    font-weight: 700;
+    color: #999;
+    margin-top: 18px;
+  }
+  
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+  
+  .cell {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: bold;
+    border-radius: 8px;
+    background: #e0e0e0;
+    user-select: none;
+  }
+  
+  .cellX {
+    color: #4a90d9;
+  }
+  
+  .cellO {
+    color: #e74c3c;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .startButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .resetButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #4a90d9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
