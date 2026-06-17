@@ -7,7 +7,8 @@ import { useState, useEffect } from "react";
 import { solveBFS } from "./bfs.js";
 import { solveDijkstra } from "./dijkstra.js";
 import { solveAStar } from "./astar.js";
-import { shuffle, INITIAL_STATE, isGoal } from "./puzzle.js";
+import { shuffle, INITIAL_STATE, GOAL_STATE, isGoal } from "./puzzle.js";
+import { processImage } from "./imageProcessor.js";
 
 export default function PuzzleUI() {
   //State variables that drive the UI
@@ -40,6 +41,12 @@ export default function PuzzleUI() {
   const [statusMessage, setStatusMessage] = useState(
     "Shuffle the puzzle and picl and algorithm to solve it",
   );
+
+  //Store the 9 image tile URLS when iser uploads
+  const [imageTiles, setImageTiles] = useState(null);
+
+  //Tracks if the image is currently being processed
+  const [isProcessingImage, setIsPorcessingImage] = useState(false);
 
   //Auto play, this advances the solution one step at a time until reaching the goal
   useEffect(() => {
@@ -75,6 +82,27 @@ export default function PuzzleUI() {
     setShowResults(false);
     setResults(null);
     setStatusMessage("Puzzle shuffled. Pick an algorithm and hit solve");
+  }
+
+  async function handleImageUpload(event) {
+    const file = event.target.files[0]; //Get the uploaded file
+    if (!file) {
+      return;
+    }
+
+    setIsPorcessingImage(true);
+    setStatusMessage("Processing Image...");
+
+    try {
+      const tiles = await processImage(file); //Slice image into 9 pirces
+      setImageTiles(tiles);
+      setBoard(GOAL_STATE); //reset board to initial state
+      setStatusMessage("Image loaded! Hit shuffle to scramble it.");
+    } catch (error) {
+      setStatusMessage("Error loading image. Please try a .jpg or .pnh file.");
+    } finally {
+      setIsPorcessingImage(false);
+    }
   }
 
   //function that handles solving th epuzzle using the selected algorithm
@@ -173,20 +201,44 @@ export default function PuzzleUI() {
       {/*Puzzle Board*/}
       <div style={styles.board}>
         {board.map((row, rowIndex) =>
-          row.map((tile, colIndex) => (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              onClick={() => handleTileClick(rowIndex, colIndex)}
-              style={{
-                ...styles.tile,
-                background: tile === 0 ? "#e0e0e0" : "#4a90d9",
-                color: tile === 0 ? "transparent" : "white",
-                cursor: tile === 0 ? "default" : "pointer",
-              }}
-            >
-              {tile !== 0 ? tile : ""}
-            </div>
-          )),
+          row.map((tile, colIndex) => {
+            // calculate which image tile this position corresponds to
+            const tileIndex = tile - 1; // tile 1 = index 0, tile 8 = index 7
+            const imageUrl = imageTiles ? imageTiles[tileIndex] : null;
+            const isBlank = tile === 0;
+
+            return (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                onClick={() => handleTileClick(rowIndex, colIndex)}
+                style={{
+                  ...styles.tile,
+                  background: isBlank
+                    ? "#e0e0e0"
+                    : imageUrl
+                      ? "transparent"
+                      : "#4a90d9",
+                  color: isBlank ? "transparent" : "white",
+                  cursor: isBlank ? "default" : "pointer",
+                  padding: 0,
+                  overflow: "hidden",
+                }}
+              >
+                {/* show image tile if image loaded, otherwise show number */}
+                {!isBlank && imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    style={{ width: "100%", height: "100%", display: "block" }}
+                    alt={`tile ${tile}`}
+                  />
+                ) : !isBlank ? (
+                  tile
+                ) : (
+                  ""
+                )}
+              </div>
+            );
+          }),
         )}
       </div>
 
@@ -203,6 +255,31 @@ export default function PuzzleUI() {
           <option value="dijkstra">Dijkstra</option>
           <option value="astar">A*</option>
         </select>
+
+        {/*Image Upload Button*/}
+        <label
+          style={{
+            ...styles.button,
+            background:
+              isPlaying || isSolving || isProcessingImage
+                ? "#95a5a6"
+                : "#8e44ad",
+            cursor:
+              isPlaying || isSolving || isProcessingImage
+                ? "not-allowed"
+                : "pointer",
+            opacity: isPlaying || isSolving || isProcessingImage ? 0.6 : 1,
+          }}
+        >
+          {isProcessingImage ? "Processing..." : "Upload Image"}
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+            disabled={isPlaying || isSolving || isProcessingImage}
+          />
+        </label>
 
         {/*Shuffle Button*/}
         <button
