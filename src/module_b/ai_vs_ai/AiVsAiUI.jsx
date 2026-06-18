@@ -131,12 +131,12 @@ export default function AiVsAiUI() {
       <p className={styles.status}>{getStatus()}</p>
 
       <div className={styles.board}>
-        {board.map((cell, index) => (
+        {board.map((element, index) => (
           <div
             key={index}
-            className={`${styles.cell} ${cell === "X" ? styles.cellX : cell === "O" ? styles.cellO : ""}`}
+            className={`${styles.cell} ${element === "X" ? styles.cellX : element === "O" ? styles.cellO : ""}`}
           >
-            {cell}
+            {element}
           </div>
         ))}
       </div>
@@ -154,7 +154,7 @@ export default function AiVsAiUI() {
         </button>
       </div>
 
-      {/* Performance Dashboard */}
+      {/* AI (X)  Max Results */}
       <div className={styles.dashboard}>
         {/* AI (X) Max */}
         <div className={`${styles.dashCard} ${styles.dashCardX}`}>
@@ -187,7 +187,7 @@ export default function AiVsAiUI() {
           </div>
         </div>
 
-        {/* AI (O) Min */}
+        {/* AI (O) Min Results */}
         <div className={`${styles.dashCard} ${styles.dashCardO}`}>
           <h4 className={styles.dashCardTitle}>AI (O) Min</h4>
           <div className={styles.dashMetric}>
