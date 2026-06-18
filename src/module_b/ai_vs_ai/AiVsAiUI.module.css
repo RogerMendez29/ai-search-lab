@@ -99,3 +99,54 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
+/* Performance Dashboard */
+.dashboard {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.dashCard {
+  flex: 1;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashCardX {
+  background: #e8f0fb;
+  border: 1px solid #4a90d9;
+}
+
+.dashCardO {
+  background: #fdecea;
+  border: 1px solid #e74c3c;
+}
+
+.dashCardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.dashMetric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.dashMetricLabel {
+  color: #666;
+}
+
+.dashMetricValue {
+  font-weight: 600;
+  color: #333;
+}
