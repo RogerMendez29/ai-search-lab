@@ -2,49 +2,64 @@ import { useState, useEffect, useRef } from "react";
 import styles from "./AiVsAiUI.module.css";
 import { getBestMove, checkWinner, isDraw } from "./AiVsAi.js";
 
-// Theoretical plain-Minimax node baselines for a full drawn game.
-// X always searches fuller boards, so its baseline is much higher than O's.
-// Pruning efficiency compares Alpha-Beta's actual nodes against these.
+// Theoretical plain-Minimax node baselines for a full drawn game. used to calculate pruning efficiency.
 const MINIMAX_BASELINE = { x: 557000, o: 60000 };
 
 export default function AiVsAiUI() {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [ai1Algo, setAi1Algo] = useState("minimax");
   const [ai2Algo, setAi2Algo] = useState("minimax");
-  const [currentTurn, setCurrentTurn] = useState("X");
+  const [whoseCurrentTurn, setWhoseCurrentTurn] = useState("X");
   const [isRunning, setIsRunning] = useState(false);
   const [dashAlgos, setDashAlgos] = useState({ x: null, o: null });
   const [decisionTimes, setDecisionTimes] = useState({ x: [], o: [] });
   const [nodesExplored, setNodesExplored] = useState({ x: 0, o: 0 });
   const timeoutRef = useRef(null);
 
+  // These variables are re caulculated every time the board changes 
   const winner = checkWinner(board);
   const draw = isDraw(board);
   const gameOver = !!winner || draw;
 
-  useEffect(() => {
-    if (!isRunning || gameOver) {
-      if (gameOver) setIsRunning(false);
+  useEffect(() => { 
+   
+    if(gameOver){
+      setIsRunning(false);
       return;
     }
+    // This check is needed to prevent auto play from occurring before the start button is pressed.
+    if(!isRunning) return;
 
+    // This similuats a delay so we can see the AI making moves.
     timeoutRef.current = setTimeout(() => {
-      const algo = currentTurn === "X" ? ai1Algo : ai2Algo;
-      const { move, timeMs, nodes } = getBestMove(board, currentTurn, algo);
+      const algo = whoseCurrentTurn === "X" ? ai1Algo : ai2Algo;
+      const { move, timeMs, nodes } = getBestMove(board, whoseCurrentTurn, algo);
       if (move === -1) return;
 
-      const key = currentTurn === "X" ? "x" : "o";
-      setDecisionTimes((prev) => ({ ...prev, [key]: [...prev[key], timeMs] }));
-      setNodesExplored((prev) => ({ ...prev, [key]: prev[key] + nodes }));
+      // used to to update the players stats 
+      const key = whoseCurrentTurn === "X" ? "x" : "o";
+
+      setDecisionTimes((oldObj) => {
+        const updatedArray = [...oldObj[key],timeMs];
+        return { ...oldObj, [key]: updatedArray };
+      })
+
+      setNodesExplored((oldObj) => {
+        const updatedCount = oldObj[key] + nodes;
+        return { ...oldObj, [key]: updatedCount };
+      })
 
       const newBoard = [...board];
-      newBoard[move] = currentTurn;
+      newBoard[move] = whoseCurrentTurn;
       setBoard(newBoard);
-      setCurrentTurn((prev) => (prev === "X" ? "O" : "X"));
+
+      // After making a move, switch to the other player's turn.
+      setWhoseCurrentTurn((prev) => (prev === "X" ? "O" : "X"));
     }, 600);
 
     return () => clearTimeout(timeoutRef.current);
-  }, [isRunning, board, currentTurn, gameOver, ai1Algo, ai2Algo]);
+  }, [isRunning, board, whoseCurrentTurn, gameOver, ai1Algo, ai2Algo]);
+
 
   function handleStart() {
     if (gameOver || isRunning) return;
@@ -52,18 +67,19 @@ export default function AiVsAiUI() {
     setIsRunning(true);
   }
 
+  /// Reset the game to its initial state.
   function handleReset() {
+    // Clear any existing timeout
     clearTimeout(timeoutRef.current);
     setIsRunning(false);
     setBoard(Array(9).fill(null));
-    setCurrentTurn("X");
+    setWhoseCurrentTurn("X");
     setDashAlgos({ x: null, o: null });
     setDecisionTimes({ x: [], o: [] });
     setNodesExplored({ x: 0, o: 0 });
   }
 
-  // Pruning Efficiency is only meaningful for Alpha-Beta: it shows how many
-  // fewer nodes were explored compared to plain Minimax's theoretical baseline.
+  /// Calculate the pruning efficiency of the Alpha-Beta algorithm.
   function getPruningEfficiency(player) {
     if (!gameOver || dashAlgos[player] !== "alphabeta") return "N/A";
     const baseline = MINIMAX_BASELINE[player];
@@ -74,7 +90,7 @@ export default function AiVsAiUI() {
   function getStatus() {
     if (winner) return `${winner} wins!`;
     if (draw) return "It's a draw!";
-    if (isRunning) return `${currentTurn} is thinking...`;
+    if (isRunning) return `${whoseCurrentTurn} is thinking...`;
     return "Press Start to begin";
   }
 
