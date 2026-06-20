@@ -1,42 +1,92 @@
-Project Members:
+# AI Search Lab
 
-How to Run:
+## Overview
 
-1. Download the zil file and extract to a folder in your computer
+AI Search Lab is an interactive web app that demonstrates two different families of AI search through two modules.
+
+- **Module A – 8-Puzzle Solver:** a single-agent search problem where the goal is to slide tiles into order. It implements three solvers — BFS (uninformed), Dijkstra (cost-based), and A\* (informed, using the Manhattan distance heuristic) — and supports a default numbered puzzle, custom image puzzles, shuffling, manual play, and step-by-step solving.
+
+- **Module B – Tic-Tac-Toe with AI:** an adversarial search problem played against an opponent. It implements Minimax and Alpha-Beta Pruning, and supports Human vs AI and AI vs AI modes with step-by-step move visualization. The performance dashboard updates independently for each mode — Human vs AI 
+tracks the AI's decision metrics per move, while AI vs AI displays metrics 
+for both agents separately.
+
+## Project Members
+
+Juan Diaz, Roger Mendez, Gabby
+
+## How to Run
+
+1. Download the zip file and extract it to a folder on your computer
 2. Open the extracted folder
-3. Open terminal
-4. Make sure to be on the root of the project "ai-search-lab"
-5. run : npm install
-6. run: npm run dev
-7. click on the localhost link to open
+3. Open a terminal
+4. Make sure you are in the root of the project "ai-search-lab"
+5. Run: npm install
+6. Run: npm run dev
+7. Click on the localhost link to open
 
-Algorithms Implemented
-Module A
+## Algorithms Implemented
 
-- BFS: Uniformed searhc, explores level by level and guarantees shortest solution
-- Dijkstra: Cost-based priority search, behavces like BFS, but guarantees the most oprimal solution
-- A\*: Informed search using Manhattan Distance heruistic, it reduces the nodes explored while guaranteeing optimal solution
+### Module A (single-agent search)
 
-Module B
+- **BFS (uninformed):** explores level by level and guarantees the shortest solution
+- **Dijkstra (cost-based):** uniform-cost priority search; behaves like BFS for unit-cost moves but guarantees the most optimal solution
+- **A\* (informed):** uses the Manhattan distance heuristic to reduce the nodes explored while still guaranteeing an optimal solution
 
-- Minimax: Adversarial search that evaluates all possible game outocmes to find the most optimal move
-- Alpha-Beta Pruning: Minimax with pruning that eliminates branches that cannot affect the final decision
+### Module B (adversarial search)
 
-Comparative Analysis Report
+- **Minimax:** evaluates all possible game outcomes to find the most optimal move
+- **Alpha-Beta Pruning:** Minimax with pruning that eliminates branches that cannot affect the final decision, reducing the number of nodes explored
 
-Promt 1 - structural comparison:
+## Architecture
 
-Both modules can be represented as search trees where nodes are states and edges are actions. Both have a clearly defined initla state, a set of permitted movements and a termianl condition, The biggest difference is who controls the next movement.
-In module a there is only one agent, so every movement is completed under the algorithm's or the player's controll.
-In module B there are 2 agents with opposing goals. After MAX makes a movie, the MIN player tries to prevent MAX from winning, and viseversa. This males the problme from finidng a path to finding an strategy that guarantees the best outcome regardless of what the oppinetn does.
+### Tech stack
 
-Promt 2 - Algorithm Fit
+React 19 + Vite, written in plain JavaScript (JSX). Styling uses CSS Modules. 
 
-A* is well suited for Module A because the problem has a sinlge clear goal state, a measurable distance to the goal, and every move has a defined cost. These allows A* to estimate how far still needs to go and prioritize the most promising moves or brnahces. Module B cannot use A\* becuase there is no fixed goal state that can be measured. The outcome depends on what the opponent does.
-Minimax does not apply to module A because Minimax assumes 2 alternative payes with opposing goals, since module a does not have an opponentm applyuing minimax will require creating an adversary that playes against you, which it does not make sense for a single player or single agent game mode.
+### Folder structure
 
-Prompt 3 - Empirical Comparison Module A
-Using the standarized Test Puzzle
+```
+ai-search-lab/
+├── index.html               # Vite entry HTML, mounts the React app
+├── package.json             # Dependencies and scripts (dev/build/lint)
+├── vite.config.js           # Vite configuration
+├── README.md
+└── src/
+    ├── main.jsx             # React entry point, renders <App>
+    ├── App.jsx              # Single entry point: holds the active module and switches between A and B
+    ├── components/
+    │   └── NavBar.jsx       # Shared top navigation / tab switcher
+    ├── module_a/            # 8-Puzzle: UI + algorithms
+    │   ├── PuzzleUI.jsx     # Puzzle board, controls, and metrics display
+    │   ├── puzzle.js        # Puzzle state, moves, shuffling, goal test
+    │   ├── bfs.js           # BFS solver
+    │   ├── dijkstra.js      # Dijkstra solver
+    │   ├── astar.js         # A* solver (Manhattan distance heuristic)
+    │   └── imageProcessor.js# Crops/slices an uploaded image into 3x3 tiles
+    ├── module_b/            # Tic-Tac-Toe: UI + algorithms
+    │   ├── TicTacToeUI.jsx  # Mode selector wrapping both game modes
+    │   ├── human_vs_ai/     # Human vs AI mode (board UI + Minimax/Alpha-Beta logic)
+    │   └── ai_vs_ai/        # AI vs AI auto-play mode (board UI + algorithm logic)
+    └── assets/              # Images and report screenshots
+```
+
+## Comparative Analysis Report
+
+### Prompt 1 - Structural comparison
+
+Both modules can be represented as search trees where nodes are states and edges are actions. Both have a clearly defined initial state, a set of permitted movements, and a terminal condition. The biggest difference is who controls the next movement.
+In Module A there is only one agent, so every movement is completed under the algorithm's or the player's control.
+In Module B there are 2 agents with opposing goals. After MAX makes a move, the MIN player tries to prevent MAX from winning, and vice versa. This turns the problem from finding a path into finding a strategy that guarantees the best outcome regardless of what the opponent does.
+
+### Prompt 2 - Algorithm Fit
+
+A\* is well suited for Module A because the problem has a single clear goal state, a measurable distance to the goal, and every move has a defined cost. These allow A\* to estimate how far it still needs to go and prioritize the most promising moves or branches. Module B cannot use A\* because there is no fixed goal state that can be measured. The outcome depends on what the opponent does.
+Minimax does not apply to Module A because Minimax assumes 2 alternating players with opposing goals. Since Module A does not have an opponent, applying Minimax would require creating an adversary that plays against you, which does not make sense for a single-player or single-agent game mode.
+
+### Prompt 3 - Empirical Comparison Module A
+
+Using the standardized Test Puzzle
+
 BFS:
 ![BFS Results](<src/assets/Schreenshots/module_a_sc/BFS full result pic.png>)
 
@@ -46,10 +96,12 @@ Dijkstra:
 A*:
 ![A* Results](<src/assets/Schreenshots/module_a_sc/Astar full result.png>)
 
-The contrast in between Dikstra's 5961 nodes and A*'s 77 nodes on the puzzle it was the most important result. Both alogiruthms found the identilca most optimlal 14-move solution. This demonstrates the value of the heurisitc information, without it, Dijkstra has no way to disntiguish the state that is getting closer to the goal or if it is moving away. A*'s manhattan distance heuristic is like a compass, that pulls the search towards the goial, ignoring the moves that makes it go a different direction other than the goal.
+The contrast between Dijkstra's 5961 nodes and A\*'s 77 nodes on the puzzle was the most important result. Both algorithms found the identical, most optimal 14-move solution. This demonstrates the value of the heuristic information; without it, Dijkstra has no way to distinguish whether a state is getting closer to the goal or moving away from it. A\*'s Manhattan distance heuristic is like a compass that pulls the search toward the goal, ignoring the moves that take it in a different direction.
 
-Prompt 4 - Empirical comparison Module B:
+### Prompt 4 - Empirical comparison Module B
 
-Prompt 5 - Trades off's Analysis:
+### Prompt 5 - Trade-offs Analysis
 
-Heruistic Information:
+### Heuristic Justification
+
+Our A* solver uses the Manhattan distance heuristic, which adds up how many rows and columns each tile needs to travel to reach its correct position. We saw this pay off directly on our test puzzle — A* needed only 77 nodes to find the same optimal 14-move solution that Dijkstra took 5961 nodes to find. The reason it never overestimates is each slide moves exactly one tile, so the real number of moves can never be less than the total distance all tiles still need to travel this means that the heuristic always stays at or below the true cost, which is what makes it admissible.
