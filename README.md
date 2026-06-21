@@ -12,7 +12,7 @@ AI Search Lab is an interactive web app that demonstrates two different families
 
 ## Project Members
 
-Juan Diaz, Roger Mendez, Gabby
+Juan Diaz, Roger Mendez, Maria Perez
 
 ## How to Run
 
