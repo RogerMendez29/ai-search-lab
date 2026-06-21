@@ -101,38 +101,38 @@ The contrast between Dijkstra's 5961 nodes and A\*'s 77 nodes on the puzzle was 
 ### Prompt 4 - Empirical comparison Module B
 
 Minimax:
-Minimax results: (<src/assets/Schreenshots/module_b_sc/Minimax.png>)
+![Minimax Results](<src/assets/Schreenshots/module_b_sc/Minimax.png>)
 
 Minimax with Alpha-beta:
-Alpha-beta results: (<src/assets/Schreenshots/module_b_sc/Alpha-beta.png>)
+![Alpha-beta Results](<src/assets/Schreenshots/module_b_sc/Alpha-beta.png>)
 
 The results for the Minimax vs Alpha-beta were conclusive, minimax explored 59,704 nodes & took 14.40 ms, while Alpha-beta only had to explore 4,089 nodes & took 3.90 ms for its first move. That gives us a node-reduction efficiency of 93.15% — (59,704 − 4,089) / 59,704 — meaning Alpha-beta reached the same optimal move while skipping over 93% of the search. The app also reports a pruning efficiency of 37.83% for the Alpha-beta run, which is the share of its own explored nodes that were pruned (1,547 pruned / 4,089 explored). Both views confirm that pruning branches which cannot affect the final decision dramatically cuts the work without changing the result.
 
 ### Prompt 5 - Trade-offs Analysis
 
-Here `b` is the branching factor, `d` the depth of the optimal solution, and `m` the maximum depth of the game tree.
+For Module A, `V` is the number of states (vertices) and `E` the number of moves between states (edges). For Module B, `b` is the branching factor and `m` the maximum depth of the game tree.
 
 **Module A (single-agent search)**
 
 - **BFS**
   - _Completeness:_ Complete — It will always find a solution if one exists.
   - _Optimality:_ It's Optimal when all moves cost the same, since the shallowest solution is then also the cheapest.
-  - _Time Complexity:_ O(b^d) — BFS expands every node up to the solution depth.
-  - _Space Complexity:_ O(b^d) — This is its main weakness, since every node must be held in memory.
+  - _Time Complexity:_ O(V + E) — BFS visits every state once and examines each move out of it.
+  - _Space Complexity:_ O(V) — This is its main weakness, since every state must be held in memory.
 
 **Dijkstra**
 
-- _Completeness:_ Complete — It always find a solution if one exists, as long as the move costs are non-negative.
+- _Completeness:_ Complete — It always finds a solution if one exists, as long as the move costs are non-negative.
 - _Optimality:_ It's Optimal, since it always expands the lowest-cost node first.
-- _Time Complexity:_ O(b^d) — With our unit-cost moves it explores like BFS, since it has no heuristic to guide it.
-- _Space Complexity:_ O(b^d) — This is its main weakness, since it must store all generated nodes ordered by cost.
+- _Time Complexity:_ O((V + E) log V) — each state passes through a priority queue ordered by cost, since it has no heuristic to guide it.
+- _Space Complexity:_ O(V) — This is its main weakness, since it must store all generated states ordered by cost.
 
 **A\***
 
 - _Completeness:_ Complete — It always finds a solution if one exists, if every node has a limited number of children.
 - _Optimality:_ It's Optimal, since the Manhattan distance heuristic is admissible and never overestimates the true cost.
-- _Time Complexity:_ O(b^d) — This is the worst case, but the heuristic prunes many branches in practice, so it usually expands far fewer nodes.
-- _Space Complexity:_ O(b^d) — This is its bottleneck, since it keeps all explored nodes in memory.
+- _Time Complexity:_ O((V + E) log V) — this is the worst case, but the heuristic prunes many branches in practice, so it usually expands far fewer states.
+- _Space Complexity:_ O(V) — This is its bottleneck, since it keeps all explored states in memory.
 
 **Module B (adversarial search)**
 
