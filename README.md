@@ -6,9 +6,9 @@ AI Search Lab is an interactive web app that demonstrates two different families
 
 - **Module A – 8-Puzzle Solver:** a single-agent search problem where the goal is to slide tiles into order. It implements three solvers — BFS (uninformed), Dijkstra (cost-based), and A\* (informed, using the Manhattan distance heuristic) — and supports a default numbered puzzle, custom image puzzles, shuffling, manual play, and step-by-step solving.
 
-- **Module B – Tic-Tac-Toe with AI:** an adversarial search problem played against an opponent. It implements Minimax and Alpha-Beta Pruning, and supports Human vs AI and AI vs AI modes with step-by-step move visualization. The performance dashboard updates independently for each mode — Human vs AI 
-tracks the AI's decision metrics per move, while AI vs AI displays metrics 
-for both agents separately.
+- **Module B – Tic-Tac-Toe with AI:** an adversarial search problem played against an opponent. It implements Minimax and Alpha-Beta Pruning, and supports Human vs AI and AI vs AI modes with step-by-step move visualization. The performance dashboard updates independently for each mode — Human vs AI
+  tracks the AI's decision metrics per move, while AI vs AI displays metrics
+  for both agents separately.
 
 ## Project Members
 
@@ -41,7 +41,7 @@ Juan Diaz, Roger Mendez, Gabby
 
 ### Tech stack
 
-React 19 + Vite, written in plain JavaScript (JSX). Styling uses CSS Modules. 
+React 19 + Vite, written in plain JavaScript (JSX). Styling uses CSS Modules.
 
 ### Folder structure
 
@@ -100,8 +100,56 @@ The contrast between Dijkstra's 5961 nodes and A\*'s 77 nodes on the puzzle was 
 
 ### Prompt 4 - Empirical comparison Module B
 
+Minimax:
+Minimax results: (<src/assets/Schreenshots/module_b_sc/Minimax.png>)
+
+Minimax with Alpha-beta:
+Alpha-beta results: (<src/assets/Schreenshots/module_b_sc/Alpha-beta.png>)
+
+The results for the Minimax vs Alpha-beta were conclusive, minimax explored 59,704 nodes & took 14.40 ms, while Alpha-beta only had to explore 4,089 nodes & took 3.90 ms for its first move. That gives us a node-reduction efficiency of 93.15% — (59,704 − 4,089) / 59,704 — meaning Alpha-beta reached the same optimal move while skipping over 93% of the search. The app also reports a pruning efficiency of 37.83% for the Alpha-beta run, which is the share of its own explored nodes that were pruned (1,547 pruned / 4,089 explored). Both views confirm that pruning branches which cannot affect the final decision dramatically cuts the work without changing the result.
+
 ### Prompt 5 - Trade-offs Analysis
+
+Here `b` is the branching factor, `d` the depth of the optimal solution, and `m` the maximum depth of the game tree.
+
+**Module A (single-agent search)**
+
+- **BFS**
+  - _Completeness:_ Complete — It will always find a solution if one exists.
+  - _Optimality:_ It's Optimal when all moves cost the same, since the shallowest solution is then also the cheapest.
+  - _Time Complexity:_ O(b^d) — BFS expands every node up to the solution depth.
+  - _Space Complexity:_ O(b^d) — This is its main weakness, since every node must be held in memory.
+
+**Dijkstra**
+
+- _Completeness:_ Complete — It always find a solution if one exists, as long as the move costs are non-negative.
+- _Optimality:_ It's Optimal, since it always expands the lowest-cost node first.
+- _Time Complexity:_ O(b^d) — With our unit-cost moves it explores like BFS, since it has no heuristic to guide it.
+- _Space Complexity:_ O(b^d) — This is its main weakness, since it must store all generated nodes ordered by cost.
+
+**A\***
+
+- _Completeness:_ Complete — It always finds a solution if one exists, if every node has a limited number of children.
+- _Optimality:_ It's Optimal, since the Manhattan distance heuristic is admissible and never overestimates the true cost.
+- _Time Complexity:_ O(b^d) — This is the worst case, but the heuristic prunes many branches in practice, so it usually expands far fewer nodes.
+- _Space Complexity:_ O(b^d) — This is its bottleneck, since it keeps all explored nodes in memory.
+
+**Module B (adversarial search)**
+
+**Minimax**
+
+- _Completeness:_ Complete — It always finds a solution, since Tic-Tac-Toe is a finite game that always terminates.
+- _Optimality:_ It's Optimal against an opponent who also plays optimally.
+- _Time Complexity:_ O(b^m) — It evaluates every possible game outcome.
+- _Space Complexity:_ O(b·m) — It explores depth-first and only stores the current path.
+
+**Alpha-Beta Pruning**
+
+- _Completeness:_ Complete — It always finds a solution, identical to Minimax.
+- _Optimality:_ It's Optimal, returning the same move as Minimax.
+- _Time Complexity:_ O(b^(m/2)) — With good move ordering it prunes branches without affecting the result.
+- _Space Complexity:_ O(b·m) — This is the same as Minimax, since pruning cuts branches without adding storage.
 
 ### Heuristic Justification
 
-Our A* solver uses the Manhattan distance heuristic, which adds up how many rows and columns each tile needs to travel to reach its correct position. We saw this pay off directly on our test puzzle — A* needed only 77 nodes to find the same optimal 14-move solution that Dijkstra took 5961 nodes to find. The reason it never overestimates is each slide moves exactly one tile, so the real number of moves can never be less than the total distance all tiles still need to travel this means that the heuristic always stays at or below the true cost, which is what makes it admissible.
+Our A* solver uses the Manhattan distance heuristic, which adds up how many rows and columns each tile needs to travel to reach its correct position. We saw this pay off directly on our test puzzle — A* needed only 77 nodes to find the same optimal 14-move solution that Dijkstra took 5961 nodes to find. The reason it never overestimates is each slide moves exactly one tile, so the real number of moves can never be less than the total distance all tiles still need to travel. This means that the heuristic always stays at or below the true cost, which is what makes it admissible.
